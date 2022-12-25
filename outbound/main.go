@@ -7,18 +7,24 @@ import (
 	"os"
 	"time"
 
+	"github.com/quickfixgo/quickfix/field"
+
 	// Custom libraries
 	"github.com/quickfixgo/quickfix"
 	"github.com/quickfixgo/quickfix/enum"
 	"github.com/quickfixgo/quickfix/fix42/newordersingle"
 )
 
-var fixconfig = flag.String("fixconfig", "outbound.cfg", "FIX config file")
-var sampleSize = flag.Int("samplesize", 1000, "Expected sample size")
+var (
+	fixconfig  = flag.String("fixconfig", "outbound.cfg", "FIX config file")
+	sampleSize = flag.Int("samplesize", 1000, "Expected sample size")
+)
 
-var SessionID quickfix.SessionID
-var start = make(chan interface{})
-var app = &OutboundRig{}
+var (
+	SessionID quickfix.SessionID
+	start     = make(chan interface{})
+	app       = &OutboundRig{}
+)
 
 func main() {
 	flag.Parse()
@@ -52,14 +58,14 @@ func main() {
 	<-start
 
 	for i := 0; i < *sampleSize; i++ {
-		order := newordersingle.Message{}
-		order.ClOrdID = "100"
-		order.HandlInst = "1"
-		order.Symbol = "TSLA"
-		order.Side = enum.Side_BUY
-		order.TransactTime = time.Now()
-		order.OrdType = enum.OrdType_MARKET
-
+		order := newordersingle.New(
+			field.NewClOrdID("100"),
+			field.NewHandlInst(enum.HandlInst_AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION),
+			field.NewSymbol("TSLA"),
+			field.NewSide(enum.Side_BUY),
+			field.NewTransactTime(time.Now()),
+			field.NewOrdType(enum.OrdType_MARKET),
+		)
 		quickfix.SendToTarget(order, SessionID)
 		// time.Sleep(1 * time.Millisecond)
 	}
@@ -76,16 +82,16 @@ func (e *OutboundRig) OnLogon(sessionID quickfix.SessionID) {
 	SessionID = sessionID
 	start <- "START"
 }
-func (e OutboundRig) OnLogout(sessionID quickfix.SessionID)                             {}
-func (e OutboundRig) ToAdmin(msgBuilder quickfix.Message, sessionID quickfix.SessionID) {}
-func (e OutboundRig) ToApp(msgBuilder quickfix.Message, sessionID quickfix.SessionID) (err error) {
+func (e OutboundRig) OnLogout(sessionID quickfix.SessionID)                              {}
+func (e OutboundRig) ToAdmin(msgBuilder *quickfix.Message, sessionID quickfix.SessionID) {}
+func (e OutboundRig) ToApp(msgBuilder *quickfix.Message, sessionID quickfix.SessionID) (err error) {
 	return
 }
 
-func (e OutboundRig) FromAdmin(msg quickfix.Message, sessionID quickfix.SessionID) (err quickfix.MessageRejectError) {
+func (e OutboundRig) FromAdmin(msg *quickfix.Message, sessionID quickfix.SessionID) (err quickfix.MessageRejectError) {
 	return
 }
 
-func (e OutboundRig) FromApp(msg quickfix.Message, sessionID quickfix.SessionID) (err quickfix.MessageRejectError) {
+func (e OutboundRig) FromApp(msg *quickfix.Message, sessionID quickfix.SessionID) (err quickfix.MessageRejectError) {
 	return
 }

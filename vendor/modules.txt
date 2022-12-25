@@ -1,0 +1,21 @@
+# github.com/grd/stat v0.0.0-20130623202159-138af3fd5012
+## explicit
+github.com/grd/stat
+# github.com/mattn/go-sqlite3 v1.14.16
+## explicit; go 1.16
+# github.com/quickfixgo/quickfix v0.6.0
+## explicit
+github.com/quickfixgo/quickfix
+github.com/quickfixgo/quickfix/config
+github.com/quickfixgo/quickfix/datadictionary
+github.com/quickfixgo/quickfix/enum
+github.com/quickfixgo/quickfix/field
+github.com/quickfixgo/quickfix/fix42
+github.com/quickfixgo/quickfix/fix42/newordersingle
+github.com/quickfixgo/quickfix/internal
+github.com/quickfixgo/quickfix/tag
+# github.com/shopspring/decimal v1.3.1
+## explicit; go 1.13
+github.com/shopspring/decimal
+# github.com/stretchr/testify v1.8.1
+## explicit; go 1.13

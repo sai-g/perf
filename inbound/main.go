@@ -14,15 +14,19 @@ import (
 	"github.com/quickfixgo/quickfix"
 )
 
-var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
-var fixconfig = flag.String("fixconfig", "inbound.cfg", "FIX config file")
-var sampleSize = flag.Int("samplesize", 1000, "Expected sample size")
+var (
+	cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+	fixconfig  = flag.String("fixconfig", "inbound.cfg", "FIX config file")
+	sampleSize = flag.Int("samplesize", 1000, "Expected sample size")
+)
 
-var count = 0
-var allDone = make(chan interface{})
-var app = &InboundRig{}
-var metrics stat.IntSlice
-var t0 time.Time
+var (
+	count   = 0
+	allDone = make(chan interface{})
+	app     = &InboundRig{}
+	metrics stat.IntSlice
+	t0      time.Time
+)
 
 func main() {
 	flag.Parse()
@@ -87,17 +91,17 @@ func (e InboundRig) OnCreate(sessionID quickfix.SessionID) {}
 func (e InboundRig) OnLogon(sessionID quickfix.SessionID) {
 	t0 = time.Now()
 }
-func (e InboundRig) OnLogout(sessionID quickfix.SessionID)                             {}
-func (e InboundRig) ToAdmin(msgBuilder quickfix.Message, sessionID quickfix.SessionID) {}
-func (e InboundRig) ToApp(msgBuilder quickfix.Message, sessionID quickfix.SessionID) (err error) {
+func (e InboundRig) OnLogout(sessionID quickfix.SessionID)                              {}
+func (e InboundRig) ToAdmin(msgBuilder *quickfix.Message, sessionID quickfix.SessionID) {}
+func (e InboundRig) ToApp(msgBuilder *quickfix.Message, sessionID quickfix.SessionID) (err error) {
 	return
 }
 
-func (e InboundRig) FromAdmin(msg quickfix.Message, sessionID quickfix.SessionID) (err quickfix.MessageRejectError) {
+func (e InboundRig) FromAdmin(msg *quickfix.Message, sessionID quickfix.SessionID) (err quickfix.MessageRejectError) {
 	return
 }
 
-func (e *InboundRig) FromApp(msg quickfix.Message, sessionID quickfix.SessionID) (err quickfix.MessageRejectError) {
+func (e *InboundRig) FromApp(msg *quickfix.Message, sessionID quickfix.SessionID) (err quickfix.MessageRejectError) {
 	metrics[count] = int64(time.Since(msg.ReceiveTime))
 	count++
 
